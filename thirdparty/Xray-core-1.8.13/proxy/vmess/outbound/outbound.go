@@ -12,6 +12,7 @@ import (
 	"github.com/xtls/xray-core/common"
 	"github.com/xtls/xray-core/common/buf"
 	"github.com/xtls/xray-core/common/net"
+	"github.com/xtls/xray-core/common/ntp"
 	"github.com/xtls/xray-core/common/platform"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/retry"
@@ -34,6 +35,7 @@ type Handler struct {
 	serverPicker  protocol.ServerPicker
 	policyManager policy.Manager
 	cone          bool
+	ntpClient *ntp.NTPClient
 }
 
 // New creates a new VMess outbound handler.
@@ -53,6 +55,7 @@ func New(ctx context.Context, config *Config) (*Handler, error) {
 		serverPicker:  protocol.NewRoundRobinServerPicker(serverList),
 		policyManager: v.GetFeature(policy.ManagerType()).(policy.Manager),
 		cone:          ctx.Value("cone").(bool),
+		ntpClient: 	   ntp.NewNTPClient("0.ru.pool.ntp.org", "1.ru.pool.ntp.org", "time.google.com", "time.windows.com", "ntps1-1.cs.tu-berlin.de"),
 	}
 
 	return handler, nil
@@ -162,7 +165,7 @@ func (h *Handler) Process(ctx context.Context, link *transport.Link, dialer inte
 		defer timer.SetTimeout(sessionPolicy.Timeouts.DownlinkOnly)
 
 		writer := buf.NewBufferedWriter(buf.NewWriter(conn))
-		if err := session.EncodeRequestHeader(request, writer); err != nil {
+		if err := session.EncodeRequestHeader(request, writer, h.ntpClient.Offset()); err != nil {
 			return newError("failed to encode request").Base(err).AtWarning()
 		}
 

@@ -59,6 +59,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	github.com/beevik/ntp v1.4.1
 )
 
 replace github.com/sagernet/sing-shadowsocks v0.2.6 => github.com/tim06/sing-shadowsocks v0.0.68

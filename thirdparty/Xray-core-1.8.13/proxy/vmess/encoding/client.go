@@ -10,6 +10,7 @@ import (
 	"encoding/binary"
 	"hash/fnv"
 	"io"
+	"time"
 
 	"github.com/xtls/xray-core/common"
 	"github.com/xtls/xray-core/common/bitmask"
@@ -61,7 +62,7 @@ func NewClientSession(ctx context.Context, behaviorSeed int64) *ClientSession {
 	return session
 }
 
-func (c *ClientSession) EncodeRequestHeader(header *protocol.RequestHeader, writer io.Writer) error {
+func (c *ClientSession) EncodeRequestHeader(header *protocol.RequestHeader, writer io.Writer, currentOffset time.Duration) error {
 	account := header.User.Account.(*vmess.MemoryAccount)
 
 	buffer := buf.New()
@@ -96,7 +97,7 @@ func (c *ClientSession) EncodeRequestHeader(header *protocol.RequestHeader, writ
 
 	var fixedLengthCmdKey [16]byte
 	copy(fixedLengthCmdKey[:], account.ID.CmdKey())
-	vmessout := vmessaead.SealVMessAEADHeader(fixedLengthCmdKey, buffer.Bytes())
+	vmessout := vmessaead.SealVMessAEADHeader(fixedLengthCmdKey, buffer.Bytes(), currentOffset)
 	common.Must2(io.Copy(writer, bytes.NewReader(vmessout)))
 
 	return nil
