@@ -22,8 +22,8 @@ let package = Package(
     ),
     .binaryTarget(
         name: "LibXray",
-	url: "https://github.com/Wanwire/FloxcoreXrayKit/releases/download/v0.0.2/LibXray.xcframework.zip",
-	checksum: "0659f5f506db8591b85e1557ac494e2d8757f868d9414d4a9eb03ad47d07b7a8"
+	url: "https://github.com/Wanwire/FloxcoreXrayKit/releases/download/0.0.99/LibXray.xcframework.zip",
+	checksum: "a0611ee1e4cd7412b7a07559eacac1efae20f3238287a2fc4dbd6957e70c306f"
     )
   ]
 )
